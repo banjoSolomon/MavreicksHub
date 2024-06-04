@@ -5,8 +5,10 @@ import com.cloudinary.Uploader;
 import com.cloudinary.utils.ObjectUtils;
 import com.solo.mavreickshub.dtos.request.UploadMediaRequest;
 import com.solo.mavreickshub.dtos.response.UploadMediaResponse;
+import com.solo.mavreickshub.exception.MediaNotFoundException;
 import com.solo.mavreickshub.exception.MediaUploadFailedException;
 import com.solo.mavreickshub.models.Media;
+import com.solo.mavreickshub.models.User;
 import com.solo.mavreickshub.repository.MediaRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ public class MavericksHubMediaService implements  MediaService {
 
     @Override
     public UploadMediaResponse upload(UploadMediaRequest request) {
+        User user= userService.getById(request.getUserId());
 
         try{
 
@@ -36,6 +39,7 @@ public class MavericksHubMediaService implements  MediaService {
            String url = response.get("url").toString();
            Media media =  modelMapper.map(request, Media.class);
            media.setUrl(url);
+           media.setUploader(user);
            media = mediaRepository.save(media);
            return modelMapper.map(media, UploadMediaResponse.class);
         }catch(Exception exception){
@@ -61,5 +65,11 @@ public class MavericksHubMediaService implements  MediaService {
         }
     }
 
+    @Override
+    public Media getMediaById(long id) {
+        return mediaRepository.findById(id)
+                .orElseThrow(()-> new MediaNotFoundException("media not found"));
     }
+
+}
 
