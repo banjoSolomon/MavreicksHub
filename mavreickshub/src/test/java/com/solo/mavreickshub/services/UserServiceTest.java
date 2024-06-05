@@ -2,6 +2,7 @@ package com.solo.mavreickshub.services;
 
 import com.solo.mavreickshub.dtos.request.CreateUserRequest;
 import com.solo.mavreickshub.dtos.response.CreateUserResponse;
+import com.solo.mavreickshub.models.Category;
 import com.solo.mavreickshub.models.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,17 +37,6 @@ public class UserServiceTest {
         assertThat(user).isNotNull();
     }
 
-    @Test
-    public void userCanUpdateMediaDescriptionAndCategory(){
-//        User user = userService.getById(200L);
-//        assertThat(user).isNotNull();
-//
-//        user.setCategory(Category.HORROR);
-//        User updatedUser = userService.update(user);
-//        assertThat(updatedUser.getMediaDescription()).isEqualTo("new description");
-//        assertThat(updatedUser.getMediaCategory()).isEqualTo("new category");
-//
 
-    }
 
 }

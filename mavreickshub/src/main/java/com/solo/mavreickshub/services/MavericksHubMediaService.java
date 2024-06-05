@@ -3,7 +3,9 @@ package com.solo.mavreickshub.services;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Uploader;
 import com.cloudinary.utils.ObjectUtils;
+import com.solo.mavreickshub.dtos.request.UpdateMediaRequest;
 import com.solo.mavreickshub.dtos.request.UploadMediaRequest;
+import com.solo.mavreickshub.dtos.response.UpdateMediaResponse;
 import com.solo.mavreickshub.dtos.response.UploadMediaResponse;
 import com.solo.mavreickshub.exception.MediaNotFoundException;
 import com.solo.mavreickshub.exception.MediaUploadFailedException;
@@ -69,6 +71,15 @@ public class MavericksHubMediaService implements  MediaService {
     public Media getMediaById(long id) {
         return mediaRepository.findById(id)
                 .orElseThrow(()-> new MediaNotFoundException("media not found"));
+    }
+
+    @Override
+    public UpdateMediaResponse updateMedia(UpdateMediaRequest updateMediaRequest) {
+        Media media = getMediaById(updateMediaRequest.getId());
+        media.setDescription(updateMediaRequest.getDescription());
+        media.setCategory(updateMediaRequest.getCategory());
+        mediaRepository.save(media);
+        return modelMapper.map(media, UpdateMediaResponse.class);
     }
 
 }

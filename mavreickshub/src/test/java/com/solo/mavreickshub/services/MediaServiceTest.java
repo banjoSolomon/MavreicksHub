@@ -1,5 +1,6 @@
 package com.solo.mavreickshub.services;
 
+import com.solo.mavreickshub.dtos.request.UpdateMediaRequest;
 import com.solo.mavreickshub.dtos.request.UploadMediaRequest;
 import com.solo.mavreickshub.dtos.response.UploadMediaResponse;
 import com.solo.mavreickshub.models.Media;
@@ -17,7 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static com.solo.mavreickshub.models.Category.ACTION;
+import static com.solo.mavreickshub.models.Category.*;
 import static com.solo.mavreickshub.utils.TestUtils.TEST_VIDEO_LOCATION;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -41,6 +42,8 @@ public class MediaServiceTest {
         } catch (IOException exception) {
             assertThat(exception).isNull();
         }
+
+
     }
 
     @Test
@@ -65,6 +68,23 @@ public class MediaServiceTest {
         log.info("found content -> {}", media);
         assertThat(media).isNotNull();
     }
+    @Test
+    public void updateMediaCategoryTest(){
+        assertThat(mediaService.getMediaById(101).getDescription()).contains("media 1");
+        assertThat(mediaService.getMediaById(101L).getCategory()).isEqualTo(ROMANCE);
+
+        UpdateMediaRequest updateMediaRequest = new UpdateMediaRequest();
+        updateMediaRequest.setId(101L);
+        updateMediaRequest.setCategory(HORROR);
+        updateMediaRequest.setDescription("THis is a horror movie");
+        mediaService.updateMedia(updateMediaRequest);
+
+        Media media = mediaService.getMediaById(101L);
+
+        assertThat(media.getDescription()).contains("horror");
+        assertThat(media.getCategory()).isEqualTo(HORROR);
+    }
+
 
     private static UploadMediaRequest buildUploadMediaRequest(InputStream inputStream) throws IOException {
         UploadMediaRequest request = new UploadMediaRequest();
@@ -75,7 +95,10 @@ public class MediaServiceTest {
 
         return request;
 
+
+
 }
+
 
 
 }
