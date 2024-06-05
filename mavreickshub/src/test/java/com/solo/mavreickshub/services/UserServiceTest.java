@@ -2,7 +2,6 @@ package com.solo.mavreickshub.services;
 
 import com.solo.mavreickshub.dtos.request.CreateUserRequest;
 import com.solo.mavreickshub.dtos.response.CreateUserResponse;
-import com.solo.mavreickshub.models.Category;
 import com.solo.mavreickshub.models.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
