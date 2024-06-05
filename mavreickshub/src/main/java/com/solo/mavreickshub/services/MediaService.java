@@ -1,5 +1,6 @@
 package com.solo.mavreickshub.services;
 
+import com.github.fge.jsonpatch.JsonPatch;
 import com.solo.mavreickshub.dtos.request.UpdateMediaRequest;
 import com.solo.mavreickshub.dtos.request.UploadMediaRequest;
 import com.solo.mavreickshub.dtos.response.UpdateMediaResponse;
@@ -13,5 +14,6 @@ public interface MediaService {
 
     Media getMediaById(long id);
 
-    UpdateMediaResponse updateMedia(UpdateMediaRequest updateMediaRequest);
+    UpdateMediaResponse update(long mediaId, JsonPatch updateMediaRequest);
+
 }

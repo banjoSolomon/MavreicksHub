@@ -3,11 +3,16 @@ package com.solo.mavreickshub.services;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Uploader;
 import com.cloudinary.utils.ObjectUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.solo.mavreickshub.dtos.request.UpdateMediaRequest;
 import com.solo.mavreickshub.dtos.request.UploadMediaRequest;
 import com.solo.mavreickshub.dtos.response.UpdateMediaResponse;
 import com.solo.mavreickshub.dtos.response.UploadMediaResponse;
 import com.solo.mavreickshub.exception.MediaNotFoundException;
+import com.solo.mavreickshub.exception.MediaUpdateFailedException;
 import com.solo.mavreickshub.exception.MediaUploadFailedException;
 import com.solo.mavreickshub.models.Media;
 import com.solo.mavreickshub.models.User;
@@ -16,6 +21,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.util.Map;
 
 @Service
@@ -27,7 +34,6 @@ public class MavericksHubMediaService implements  MediaService {
     private final  Cloudinary cloudinary;
     private final ModelMapper modelMapper;
     private final UserService userService;
-
 
     @Override
     public UploadMediaResponse upload(UploadMediaRequest request) {
@@ -74,13 +80,27 @@ public class MavericksHubMediaService implements  MediaService {
     }
 
     @Override
-    public UpdateMediaResponse updateMedia(UpdateMediaRequest updateMediaRequest) {
-        Media media = getMediaById(updateMediaRequest.getId());
-        media.setDescription(updateMediaRequest.getDescription());
-        media.setCategory(updateMediaRequest.getCategory());
-        mediaRepository.save(media);
-        return modelMapper.map(media, UpdateMediaResponse.class);
-    }
+    public UpdateMediaResponse update(long mediaId, JsonPatch jsonPatch) {
+       try{
+           //1. get target object
+        Media media = getMediaById(mediaId);
+        //2. covert object from above to JasonNode (use ObjectMapper)
+        ObjectMapper objectMapper = new ObjectMapper();
+       JsonNode mediaNode = objectMapper.convertValue(media, JsonNode.class);
+       //3. apply jasonPatch to mediaNode
+       mediaNode = jsonPatch.apply(mediaNode);
+       //4. convert mediaNode to media object
+       media = objectMapper.convertValue(media, Media.class);
+       media = mediaRepository.save(media);
+       return modelMapper.map(media, UpdateMediaResponse.class);
+    }catch (JsonPatchException e){
+           throw new MediaUpdateFailedException(e.getMessage());
+       }
+
+
+
+       }
+
 
 }
 

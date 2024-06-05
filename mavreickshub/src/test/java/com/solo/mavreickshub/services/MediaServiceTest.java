@@ -1,10 +1,19 @@
 package com.solo.mavreickshub.services;
 
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jackson.jsonpointer.JsonPointerException;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchOperation;
+import com.github.fge.jsonpatch.ReplaceOperation;
 import com.solo.mavreickshub.dtos.request.UpdateMediaRequest;
 import com.solo.mavreickshub.dtos.request.UploadMediaRequest;
+import com.solo.mavreickshub.dtos.response.UpdateMediaResponse;
 import com.solo.mavreickshub.dtos.response.UploadMediaResponse;
+import com.solo.mavreickshub.models.Category;
 import com.solo.mavreickshub.models.Media;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +26,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static com.solo.mavreickshub.models.Category.*;
 import static com.solo.mavreickshub.utils.TestUtils.TEST_VIDEO_LOCATION;
@@ -68,22 +78,23 @@ public class MediaServiceTest {
         log.info("found content -> {}", media);
         assertThat(media).isNotNull();
     }
+
     @Test
-    public void updateMediaCategoryTest(){
-        assertThat(mediaService.getMediaById(101).getDescription()).contains("media 1");
-        assertThat(mediaService.getMediaById(101L).getCategory()).isEqualTo(ROMANCE);
+    @DisplayName("test update media files")
+    public void testPartialUpdateMedia() throws JsonPointerException {
+        Category category = mediaService.getMediaById(103L).getCategory();
+        assertThat(category).isNotEqualTo(HORROR);
+        List<JsonPatchOperation> operations = List.of(
+                new ReplaceOperation(new JsonPointer("/category"), new TextNode(ROMANCE.name()))
+        );
+        JsonPatch updateMediaRequest = new JsonPatch(operations);
+        UpdateMediaResponse response = mediaService.update(103L, updateMediaRequest);
+        assertThat(response).isNotNull();
+        category = mediaService.getMediaById(103L).getCategory();
+        assertThat(category).isEqualTo(ROMANCE);
 
-        UpdateMediaRequest updateMediaRequest = new UpdateMediaRequest();
-        updateMediaRequest.setId(101L);
-        updateMediaRequest.setCategory(HORROR);
-        updateMediaRequest.setDescription("THis is a horror movie");
-        mediaService.updateMedia(updateMediaRequest);
 
-        Media media = mediaService.getMediaById(101L);
-
-        assertThat(media.getDescription()).contains("horror");
-        assertThat(media.getCategory()).isEqualTo(HORROR);
-    }
+}
 
 
     private static UploadMediaRequest buildUploadMediaRequest(InputStream inputStream) throws IOException {
