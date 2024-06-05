@@ -8,6 +8,7 @@ import com.github.fge.jsonpatch.JsonPatchOperation;
 import com.github.fge.jsonpatch.ReplaceOperation;
 import com.solo.mavreickshub.dtos.request.UpdateMediaRequest;
 import com.solo.mavreickshub.dtos.request.UploadMediaRequest;
+import com.solo.mavreickshub.dtos.response.MediaResponse;
 import com.solo.mavreickshub.dtos.response.UpdateMediaResponse;
 import com.solo.mavreickshub.dtos.response.UploadMediaResponse;
 import com.solo.mavreickshub.models.Category;
@@ -31,7 +32,8 @@ import java.util.List;
 import static com.solo.mavreickshub.models.Category.*;
 import static com.solo.mavreickshub.utils.TestUtils.TEST_VIDEO_LOCATION;
 import static com.solo.mavreickshub.utils.TestUtils.buildUploadMediaRequest;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 @SpringBootTest
 @Slf4j
@@ -81,6 +83,14 @@ public class MediaServiceTest {
     }
 
     @Test
+    public void getMediaForUserTest(){
+        Long userId =(200L);
+        List<MediaResponse> media= mediaService.getMediaFor(userId);
+       assertThat(media).hasSize(3);
+
+    }
+
+    @Test
     @DisplayName("test update media files")
     public void testPartialUpdateMedia() throws JsonPointerException {
         Category category = mediaService.getMediaById(103L).getCategory();
@@ -96,9 +106,6 @@ public class MediaServiceTest {
 
 
 }
-
-
-
 
 
 

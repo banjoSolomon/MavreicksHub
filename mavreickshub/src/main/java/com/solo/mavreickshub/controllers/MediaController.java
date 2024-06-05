@@ -1,6 +1,5 @@
 package com.solo.mavreickshub.controllers;
 
-import com.solo.mavreickshub.dtos.request.UpdateMediaRequest;
 import com.solo.mavreickshub.dtos.request.UploadMediaRequest;
 import com.solo.mavreickshub.services.MediaService;
 import lombok.AllArgsConstructor;

@@ -9,6 +9,7 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.solo.mavreickshub.dtos.request.UpdateMediaRequest;
 import com.solo.mavreickshub.dtos.request.UploadMediaRequest;
+import com.solo.mavreickshub.dtos.response.MediaResponse;
 import com.solo.mavreickshub.dtos.response.UpdateMediaResponse;
 import com.solo.mavreickshub.dtos.response.UploadMediaResponse;
 import com.solo.mavreickshub.exception.MediaNotFoundException;
@@ -23,6 +24,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -100,6 +102,13 @@ public class MavericksHubMediaService implements  MediaService {
 
 
        }
+
+    @Override
+    public List<MediaResponse> getMediaFor(Long userId) {
+      List<Media> media = mediaRepository.findAllMediaFor(userId);
+        return media.stream()
+                .map(mediaItem->modelMapper.map(mediaItem,MediaResponse.class)).toList();
+    }
 
 
 }
