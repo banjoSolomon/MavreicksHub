@@ -30,6 +30,7 @@ import java.util.List;
 
 import static com.solo.mavreickshub.models.Category.*;
 import static com.solo.mavreickshub.utils.TestUtils.TEST_VIDEO_LOCATION;
+import static com.solo.mavreickshub.utils.TestUtils.buildUploadMediaRequest;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
@@ -97,14 +98,7 @@ public class MediaServiceTest {
 }
 
 
-    private static UploadMediaRequest buildUploadMediaRequest(InputStream inputStream) throws IOException {
-        UploadMediaRequest request = new UploadMediaRequest();
-        MultipartFile file = new MockMultipartFile("media",inputStream);
-        request.setMediaFile(file);
-        request.setCategory(ACTION);
-        request.setUserId(201L);
 
-        return request;
 
 
 
@@ -112,4 +106,3 @@ public class MediaServiceTest {
 
 
 
-}
