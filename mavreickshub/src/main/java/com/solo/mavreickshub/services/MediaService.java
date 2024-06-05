@@ -20,4 +20,5 @@ public interface MediaService {
     UpdateMediaResponse update(long mediaId, JsonPatch updateMediaRequest);
 
     List<MediaResponse> getMediaFor(Long userId);
+
 }
