@@ -99,7 +99,6 @@ public class MavericksHubMediaService implements  MediaService {
        }
 
 
-
        }
 
     @Override
@@ -108,7 +107,6 @@ public class MavericksHubMediaService implements  MediaService {
         return media.stream()
                 .map(mediaItem->modelMapper.map(mediaItem,MediaResponse.class)).toList();
     }
-
 
 }
 
