@@ -10,4 +10,6 @@ public interface UserService {
     CreateUserResponse register(CreateUserRequest request);
 
     User getById(long l);
+
+   User getUserByUsername(String username);
 }
