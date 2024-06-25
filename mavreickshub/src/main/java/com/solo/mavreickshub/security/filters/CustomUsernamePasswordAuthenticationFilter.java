@@ -1,5 +1,7 @@
 package com.solo.mavreickshub.security.filters;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solo.mavreickshub.dtos.request.LoginRequest;
 import jakarta.servlet.FilterChain;
@@ -12,14 +14,17 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.Security;
+import java.time.Instant;
+import java.util.Collection;
+
+
 
 @Component
 @AllArgsConstructor
@@ -29,8 +34,20 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+      String token = JWT.create()
+               .withIssuer("mavericks_hub")
+               .withArrayClaim("roles", getClaimsForm(authResult.getAuthorities()))
+               .withExpiresAt(Instant.now().plusSeconds(24 * 60 * 60))
+               .sign(Algorithm.HMAC512("secret"));
 
     }
+    private static String[] getClaimsForm(Collection<? extends GrantedAuthority> authorities) {
+        return authorities.stream()
+                .map((grantedAuthority )-> grantedAuthority.getAuthority())
+                .toArray(String[]::new);
+
+    }
+
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
