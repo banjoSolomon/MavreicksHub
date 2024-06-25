@@ -46,6 +46,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
         res.put("access", token);
         response.getOutputStream().write(objectMapper.writeValueAsBytes(res));
         response.flushBuffer();
+        chain.doFilter(request, response);
 
     }
     private static String[] getClaimsForm(Collection<? extends GrantedAuthority> authorities) {
