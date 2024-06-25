@@ -23,22 +23,29 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.Collection;
-
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Component
 @AllArgsConstructor
 public class CustomUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+
       String token = JWT.create()
                .withIssuer("mavericks_hub")
                .withArrayClaim("roles", getClaimsForm(authResult.getAuthorities()))
                .withExpiresAt(Instant.now().plusSeconds(24 * 60 * 60))
                .sign(Algorithm.HMAC512("secret"));
+        Map<String, String> res = new HashMap<>();
+        res.put("access", token);
+        response.getOutputStream().write(objectMapper.writeValueAsBytes(res));
+        response.flushBuffer();
 
     }
     private static String[] getClaimsForm(Collection<? extends GrantedAuthority> authorities) {
@@ -56,7 +63,6 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             //1 Retrieve authentication credentials from the request body
             InputStream requestBodyStream = request.getInputStream();
