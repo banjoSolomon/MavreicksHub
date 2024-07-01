@@ -3,12 +3,15 @@ package com.solo.mavreickshub.services;
 import com.solo.mavreickshub.dtos.request.CreateUserRequest;
 import com.solo.mavreickshub.dtos.response.CreateUserResponse;
 import com.solo.mavreickshub.exception.UserNotFoundException;
+import com.solo.mavreickshub.models.Authority;
 import com.solo.mavreickshub.models.User;
 import com.solo.mavreickshub.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
 
 @Service
 public class MavericksHubUserService implements UserService {
@@ -27,6 +30,9 @@ public class MavericksHubUserService implements UserService {
     public CreateUserResponse register(CreateUserRequest request) {
       User user =  modelMapper.map(request, User.class);
       user.setPassword(passwordEncoder.encode(request.getPassword()));
+      user.setAuthorities(new HashSet<>());
+      var authorities = user.getAuthorities();
+      authorities.add(Authority.USER);
       user= userRepository.save(user);
       var response = modelMapper.map(request, CreateUserResponse.class);
       response.setMessage("user registered successfully");
