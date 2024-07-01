@@ -38,6 +38,7 @@ public class User {
     @Setter(AccessLevel.NONE)
     private LocalDateTime timeUpdated;
     @ElementCollection
+    @Enumerated(EnumType.STRING)
     private Set<Authority> authorities;
 
 

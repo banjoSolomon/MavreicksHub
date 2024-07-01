@@ -20,7 +20,7 @@ public class UserServiceTest {
     @Test
     public void registerTest(){
         CreateUserRequest request = new CreateUserRequest();
-        request.setEmail("ayomide@gmail.com");
+        request.setEmail("ayomides@gmail.com");
         request.setPassword("password");
 
         CreateUserResponse response = userService.register(request);

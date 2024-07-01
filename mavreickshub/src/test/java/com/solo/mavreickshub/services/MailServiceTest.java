@@ -1,5 +1,6 @@
 package com.solo.mavreickshub.services;
 
+import com.solo.mavreickshub.dtos.request.SendMailRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +14,12 @@ public class MailServiceTest {
     @Test
     public void testSendEmail() {
         String email = "ayomidebanjo02@gmail.com";
-       String response = mailService.sendMail(email);
+        SendMailRequest sendMailRequest = new SendMailRequest();
+        sendMailRequest.setEmail(email);
+        sendMailRequest.setRecipientName("solomon");
+        sendMailRequest.setContent("<p>Hello from me</p>");
+        sendMailRequest.setSubject("Test Email");
+       String response = mailService.sendMail(sendMailRequest);
        assertThat(response).isNotNull();
        assertThat(response).containsIgnoringCase("success");
 
