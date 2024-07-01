@@ -1,6 +1,7 @@
 package com.solo.mavreickshub.handlers;
 
 import com.solo.mavreickshub.exception.MediaUploadFailedException;
+import com.solo.mavreickshub.exception.UserNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,6 +21,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(BAD_REQUEST).body(Map.of("error",exception.getMessage(),
                 "success",false));
 
+    }
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<?> handleUserNotFound(UserNotFoundException exception) {
+        return ResponseEntity.status(BAD_REQUEST).body(Map.of("error",exception.getMessage(),
+                "success",false));
     }
 
 

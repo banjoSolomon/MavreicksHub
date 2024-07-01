@@ -1,6 +1,7 @@
 package com.solo.mavreickshub.controllers;
 
 import com.solo.mavreickshub.dtos.request.UploadMediaRequest;
+import com.solo.mavreickshub.exception.UserNotFoundException;
 import com.solo.mavreickshub.services.MediaService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
@@ -21,7 +22,7 @@ public class MediaController {
 
     }
     @GetMapping
-    public ResponseEntity<?> getMediaFor(@RequestParam Long userId){
+    public ResponseEntity<?> getMediaFor(@RequestParam Long userId)throws UserNotFoundException {
         return ResponseEntity.ok(mediaService.getMediaFor(userId));
     }
 }

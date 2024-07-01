@@ -103,6 +103,7 @@ public class MavericksHubMediaService implements  MediaService {
 
     @Override
     public List<MediaResponse> getMediaFor(Long userId) {
+        userService.getById(userId);
       List<Media> media = mediaRepository.findAllMediaFor(userId);
         return media.stream()
                 .map(mediaItem->modelMapper.map(mediaItem,MediaResponse.class)).toList();

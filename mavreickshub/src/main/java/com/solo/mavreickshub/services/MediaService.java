@@ -1,7 +1,6 @@
 package com.solo.mavreickshub.services;
 
 import com.github.fge.jsonpatch.JsonPatch;
-import com.solo.mavreickshub.dtos.request.UpdateMediaRequest;
 import com.solo.mavreickshub.dtos.request.UploadMediaRequest;
 import com.solo.mavreickshub.dtos.response.MediaResponse;
 import com.solo.mavreickshub.dtos.response.UpdateMediaResponse;
