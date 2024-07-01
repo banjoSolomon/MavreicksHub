@@ -4,11 +4,14 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solo.mavreickshub.dtos.request.LoginRequest;
+import com.solo.mavreickshub.dtos.response.BaseResponse;
+import com.solo.mavreickshub.dtos.response.LoginResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,17 +20,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
+
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 
-@Component
 @AllArgsConstructor
 public class CustomUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
@@ -36,19 +36,29 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-
-      String token = JWT.create()
-               .withIssuer("mavericks_hub")
-               .withArrayClaim("roles", getClaimsForm(authResult.getAuthorities()))
-               .withExpiresAt(Instant.now().plusSeconds(24 * 60 * 60))
-               .sign(Algorithm.HMAC512("secret"));
-        Map<String, String> res = new HashMap<>();
-        res.put("access", token);
-        response.getOutputStream().write(objectMapper.writeValueAsBytes(res));
+        LoginResponse loginResponse = new LoginResponse();
+        String token = generateAccessToken(authResult);
+        loginResponse.setToken(token);
+        loginResponse.setMessage("Successful Authentication");
+        BaseResponse<LoginResponse> authResponse = new BaseResponse<>();
+        authResponse.setCode(HttpStatus.OK.value());
+        authResponse.setData(loginResponse);
+        authResponse.setStatus(true);
+        response.getOutputStream().write(objectMapper.writeValueAsBytes(authResponse));
         response.flushBuffer();
         chain.doFilter(request, response);
 
     }
+
+    private static String generateAccessToken(Authentication authResult) {
+        return  JWT.create()
+                 .withIssuer("mavericks_hub")
+                 .withArrayClaim("roles", getClaimsForm(authResult.getAuthorities()))
+                 .withExpiresAt(Instant.now().plusSeconds(24 * 60 * 60))
+                 .sign(Algorithm.HMAC512("secret"));
+
+    }
+
     private static String[] getClaimsForm(Collection<? extends GrantedAuthority> authorities) {
         return authorities.stream()
                 .map((grantedAuthority )-> grantedAuthority.getAuthority())
@@ -58,11 +68,23 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setMessage(exception.getMessage());
+        BaseResponse<LoginResponse> baseResponse = new BaseResponse<>();
+        baseResponse.setData(loginResponse);
+        baseResponse.setStatus(false);
+        baseResponse.setCode(HttpStatus.UNAUTHORIZED.value());
+        
+        response.getOutputStream().write(objectMapper.writeValueAsBytes(baseResponse));
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.flushBuffer();
+        
+        
 
     }
 
-    @Override
+        @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
             //1 Retrieve authentication credentials from the request body
