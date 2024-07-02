@@ -19,9 +19,9 @@ public class MailServiceTest {
         sendMailRequest.setRecipientName("solomon");
         sendMailRequest.setContent("<p>Hello from me</p>");
         sendMailRequest.setSubject("Test Email");
-       String response = mailService.sendMail(sendMailRequest);
-       assertThat(response).isNotNull();
-       assertThat(response).containsIgnoringCase("success");
 
+        String response = mailService.sendMail(sendMailRequest);
+        assertThat(response).isNotNull();
+        assertThat(response).containsIgnoringCase("success");
     }
 }
