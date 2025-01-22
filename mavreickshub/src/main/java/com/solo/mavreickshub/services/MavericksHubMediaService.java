@@ -32,7 +32,7 @@ import java.util.Map;
 public class MavericksHubMediaService implements  MediaService {
 
     private final MediaRepository mediaRepository;
-    private final  Cloudinary cloudinary;
+    private final Cloudinary cloudinary;
     private final ModelMapper modelMapper;
     private final UserService userService;
 
