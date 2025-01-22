@@ -2,6 +2,9 @@ name: Update GitHub Secrets
 
 on:
   push:
+    branches:
+      - main
+
     paths:
       - ".env"  # Trigger only if the .env file changes
 
