@@ -3,7 +3,7 @@ name: Update GitHub Secrets
 on:
   push:
     branches:
-      - dev  # Trigger only on push to the main branch
+      - dev  # Trigger only on push to the dev branch
     paths:
       - ".env"  # Trigger only if the .env file changes
 
@@ -19,13 +19,22 @@ jobs:
       # Install GitHub CLI
       - name: Install GitHub CLI
         run: |
-          sudo apt-get update
-          sudo apt-get install -y gh
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install -y gh
 
       # Authenticate GitHub CLI
       - name: Authenticate GitHub CLI
         run: |
           echo "${{ secrets.G_TOKEN }}" | gh auth login --with-token
+
+      # Debugging step to check the context
+      - name: Debug Context
+        run: |
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Repository: ${{ github.repository }}"
 
       # Extract and update secrets
       - name: Update GitHub Secrets
