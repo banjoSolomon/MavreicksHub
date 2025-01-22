@@ -3,7 +3,7 @@ name: Update GitHub Secrets
 on:
   push:
     branches:
-      - main  # Trigger only on push to the main branch
+      - dev  # Trigger only on push to the main branch
     paths:
       - ".env"  # Trigger only if the .env file changes
 
